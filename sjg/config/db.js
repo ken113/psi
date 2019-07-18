@@ -20,5 +20,6 @@ var sequelize = new Sequelize('sjg', 'root', '123456', {
 });
 
 module.exports = {
-    sequelize
+    sequelize,
+    Op: Sequelize.Op
 };

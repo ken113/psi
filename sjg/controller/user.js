@@ -4,7 +4,7 @@ const db = require('../config/db')
 //引入sequelize对象
 const Sequelize = db.sequelize
 
-const Op = Sequelize.Op;
+const Op = db.Op;
 
 //引入数据表模型
 const user = Sequelize.import('../module/user')
@@ -64,7 +64,7 @@ class userModule {
             return await user.findAll({
                 where: {
                     userName: {
-                        [Sequelize.Op.like]: '%' + userName + '%'
+                        [Op.like]: '%' + userName + '%'
                     }
                 },
                 attributes: { exclude: ['password'] }
