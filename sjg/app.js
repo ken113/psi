@@ -12,6 +12,8 @@ const koajwt = require('koa-jwt')
 const cors = require('koa-cors')
 
 const user = require('./routes/user')
+const material = require('./routes/material')
+const order = require('./routes/order')
 
 // error handler
 onerror(app)
@@ -61,6 +63,10 @@ app.use(koajwt({
 app.use(index.routes(), index.allowedMethods())
 
 app.use(user.routes(), user.allowedMethods())
+
+app.use(material.routes(), material.allowedMethods())
+
+app.use(order.routes(), order.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

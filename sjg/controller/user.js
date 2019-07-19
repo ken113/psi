@@ -140,12 +140,13 @@ class userController {
                         createdAt: data.createdAt,
                         updatedAt: data.updatedAt,
                         mobileNo: data.mobileNo,
-                        userId: data.userId
+                        userId: data.userId,
+                        userName: data.userName
                     }
                     return ctx.body = {
                         code: '0',
                         token: token,
-                        userInfo: JSON.stringify(info),
+                        userInfo: info,
                         desc: '登陆成功'
                     }
                 } else {
