@@ -14,6 +14,9 @@ const cors = require('koa-cors')
 const user = require('./routes/user')
 const material = require('./routes/material')
 const order = require('./routes/order')
+const customer = require('./routes/customer')
+const supplier = require('./routes/supplier')
+const purchase = require('./routes/purchase')
 
 // error handler
 onerror(app)
@@ -67,6 +70,12 @@ app.use(user.routes(), user.allowedMethods())
 app.use(material.routes(), material.allowedMethods())
 
 app.use(order.routes(), order.allowedMethods())
+
+app.use(customer.routes(), customer.allowedMethods())
+
+app.use(supplier.routes(), supplier.allowedMethods())
+
+app.use(purchase.routes(), purchase.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

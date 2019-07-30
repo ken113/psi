@@ -4,23 +4,28 @@
       <div class="nav-left"><i class="el-icon-platform-eleme"></i></div>
       <div class="nav-center" style="">
         <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
-          <el-menu-item index="order">
-            <router-link to="/order" style="">订单管理</router-link>
-          </el-menu-item>
           <el-submenu index="2">
             <template slot="title">采购业务</template>
             <el-menu-item index="material">
-              <router-link to="/material" style="">材料物品管理</router-link>
+              <router-link to="/material">材料物品管理</router-link>
             </el-menu-item>
-            <el-menu-item index="2-2">供应商管理</el-menu-item>
-            <el-menu-item index="2-3">采购单管理</el-menu-item>
+            <el-menu-item index="supplier">
+              <router-link to="/supplier">供应商管理</router-link>
+            </el-menu-item>
+            <el-menu-item index="purchase">
+              <router-link to="/purchase">采购单管理</router-link>
+            </el-menu-item>
           </el-submenu>
           <el-submenu index="3">
             <template slot="title">销售业务</template>
             <el-menu-item index="3-1">产品物料管理</el-menu-item>
-            <el-menu-item index="3-2">客户资料管理</el-menu-item>
+            <el-menu-item index="customer">
+              <router-link to="/customer">客户资料管理</router-link>
+            </el-menu-item>
             <el-menu-item index="3-3">客户报价单管理</el-menu-item>
-            <el-menu-item index="3-4">销售订单管理</el-menu-item>
+            <el-menu-item index="order">
+              <router-link to="/order">销售订单管理</router-link>
+            </el-menu-item>
           </el-submenu>
           <el-submenu index="4">
             <template slot="title">仓库业务</template>

@@ -25,6 +25,15 @@ const router = new Router({
         { path: '/user', component: () => import('./views/user/user.vue') },
         { path: '/user/add', component: () => import('./views/user/addUser.vue') },
         { path: '/user/edit/:userId', component: () => import('./views/user/editUser.vue') },
+        { path: '/customer', component: () => import('./views/customer/customer.vue') },
+        { path: '/customer/add', component: () => import('./views/customer/addCustomer.vue') },
+        { path: '/customer/edit/:customerId', component: () => import('./views/customer/editCustomer.vue') },
+        { path: '/supplier', component: () => import('./views/supplier/supplier.vue') },
+        { path: '/supplier/add', component: () => import('./views/supplier/addSupplier.vue') },
+        { path: '/supplier/edit/:supplierId', component: () => import('./views/supplier/editSupplier.vue') },
+        { path: '/purchase', component: () => import('./views/purchase/purchase.vue') },
+        { path: '/purchase/add', component: () => import('./views/purchase/addPurchase.vue') },
+        { path: '/purchase/edit/:purchaseId', component: () => import('./views/purchase/editPurchase.vue') },
       ]
     },
   ]
