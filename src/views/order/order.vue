@@ -1,14 +1,13 @@
 <template>
   <div class="page-order">
-    <div style="overflow:hidden;">
-      <el-breadcrumb separator-class="el-icon-arrow-right" style="margin:20px 0;float:left;">
-        <el-breadcrumb-item :to="{ path: '/' }">订单管理</el-breadcrumb-item>
-      </el-breadcrumb>
+    <div style="overflow:hidden;margin:15px 0;">
+
       <router-link to="/order/add">
         <el-button type="primary" style="float:right;margin-top:8px;">新增订单</el-button>
       </router-link>
-      <el-button style="float:right;margin:8px 10px 0 10px;">导出</el-button>
-
+      <el-button style="float:right;margin:8px 10px 0 10px;" @click="downloadExl">导出</el-button>
+      <el-button style="float:right;margin:8px 10px 0 10px;" @click="importExl">导入</el-button>
+      <input type="file" @change="importFile(this)" id="imFile" style="display: none" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
       <el-button type="primary" style="float:right;margin:8px 10px 0 10px;">搜索</el-button>
       <el-input style="float:right;margin:8px 10px 0 10px; width:350px;" placeholder="订单编号搜索,支持多编号空格隔开搜索" />
     </div>
@@ -41,7 +40,12 @@
 </template>
 <script>
 import axios from "axios";
-import { convertDate } from "./../../lib/common";
+import XLSX from "xlsx";
+import {
+  convertDate,
+  downloadExcel,
+  importConverData
+} from "./../../lib/common";
 export default {
   name: "order",
   data() {
@@ -76,8 +80,62 @@ export default {
       let html = "";
       if (row.state === "接单") {
         html = <span style="color:#FF0000">接单</span>;
+      } else {
+        html = row.state;
       }
       return <div>{html}</div>;
+    },
+    downloadExl() {
+      let excelData = [
+        {
+          orderNumber: "订单号",
+          orderName: "订单名称",
+          customerCompany: "客户公司",
+          state: "订单状态",
+          createDate: "下单时间",
+          deliveryDate: "交货日期",
+          materialName: "物料",
+          remark: "备注"
+        }
+      ];
+
+      this.tableData.forEach((item, key) => {
+        item.createDate = convertDate(item.createDate);
+        item.deliveryDate = convertDate(item.deliveryDate).substring(0, 10);
+        excelData.push(item);
+      });
+
+      downloadExcel(excelData, "order");
+    },
+    importExl() {
+      document.getElementById("imFile").click();
+    },
+    importFile() {
+      importConverData(data => {
+        // 处理导入的数据
+        let that = this;
+        let importData = [];
+        data.forEach(item => {
+          importData.push({
+            orderNumber: item["订单号"],
+            orderName: item["订单名称"],
+            customerCompany: item["客户公司"],
+            state: item["订单状态"],
+            createDate: item["下单时间"],
+            deliveryDate: item["交货日期"],
+            materialName: item["物料"],
+            remark: item["备注"]
+          });
+        });
+
+        axios.post("/order/import", importData).then(function(response) {
+          if (response.status === 200 && response.data.code === "0") {
+            that.loadList();
+          } else {
+            that.$message.error(response.data.desc);
+          }
+        });
+      });
     }
   }
 };

@@ -5,7 +5,7 @@
         <el-breadcrumb-item :to="{ path: '/' }">采购单管理</el-breadcrumb-item>
       </el-breadcrumb>
       <router-link to="/purchase/add">
-        <el-button type="primary" style="float:right;margin-top:8px;">新增客户</el-button>
+        <el-button type="primary" style="float:right;margin-top:8px;">新增采购单</el-button>
       </router-link>
       <el-button style="float:right;margin:8px 10px 0 10px;">导出</el-button>
 

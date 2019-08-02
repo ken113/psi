@@ -6,19 +6,25 @@
       </el-breadcrumb>
     </div>
     <el-form label-width="100px" style="width:400px;" :model="form" :rules="rules" ref="form">
-      <el-form-item label="客户名称:" prop="customerName" required>
+      <el-form-item label="单据编号:" prop="purchaseNumber" required>
         <el-input v-model="form.customerName"></el-input>
       </el-form-item>
-      <el-form-item label="联系人:" prop="contacts" required>
+      <el-form-item label="应收欠款:" prop="debt" required>
         <el-input v-model="form.contacts"></el-input>
       </el-form-item>
-      <el-form-item label="联系电话:" prop="contactsPhonte" required>
+      <el-form-item label="业务日期:" prop="date" required>
         <el-input v-model="form.contactsPhonte"></el-input>
       </el-form-item>
-      <el-form-item label="公司电话:" prop="tel">
+      <el-form-item label="供应商名称:" prop="supplierName">
         <el-input v-model="form.tel"></el-input>
       </el-form-item>
-      <el-form-item label="地址:" prop="address">
+      <el-form-item label="进货订单商品:" prop="goods">
+        <el-input v-model="form.address"></el-input>
+      </el-form-item>
+      <el-form-item label="数量:" prop="goodsNum">
+        <el-input v-model="form.address"></el-input>
+      </el-form-item>
+      <el-form-item label="应付金额:" prop="pay">
         <el-input v-model="form.address"></el-input>
       </el-form-item>
       <div style="text-align:left;">

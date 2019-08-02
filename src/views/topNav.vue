@@ -53,6 +53,7 @@
       <div class="nav-right"><i class="el-icon-switch-button" title="退出登录" @click="logout"></i></div>
     </div>
     <router-view></router-view>
+    <a href="" download="导出.xlsx" id="hf"></a>
   </div>
 </template>
 <script>

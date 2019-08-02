@@ -1,4 +1,4 @@
-
+import XLSX from "xlsx";
 /**
 *设置cookie值
 */
@@ -51,6 +51,132 @@ export function getUrlParam(param) {
     const reg = new RegExp(`${param}=([^&]*)(&?)`, 'i'),
         paramValue = location.hash.match(reg);
     return paramValue ? paramValue[1] : '';
+}
+
+/**
+ * 导出功能
+ * @param {*} data 数据
+ * @param {*} excelName 文件名 
+ */
+export function downloadExcel(data, excelName) {
+
+    let tmpdata = [];
+    let keyMap = [] // 获取键
+    for (let k in data[0]) {
+        keyMap.push(k)
+    }
+
+    data.map((v, i) => keyMap.map((k, j) => Object.assign({}, {
+        v: v[k],
+        position: (j > 25 ? getCharCol(j) : String.fromCharCode(65 + j)) + (i + 1)
+    }))).reduce((prev, next) => prev.concat(next)).forEach(function (v) {
+        tmpdata[v.position] = {
+            v: v.v
+        }
+    })
+
+    let outputPos = Object.keys(tmpdata);
+
+    const workbook = {
+        SheetNames: ["Sheet1"],
+        Sheets: {
+            Sheet1: Object.assign({}, tmpdata, {
+                '!ref': outputPos[0] + ':' + outputPos[outputPos.length - 1]
+            })
+        }
+    };
+
+    const tmpDown = new Blob(
+        [
+            s2ab(
+                XLSX.write(
+                    workbook,
+                    {
+                        bookType: "xlsx",
+                        bookSST: false,
+                        type: "binary"
+                    } //这里的数据是用来定义导出的格式类型
+                )
+            )
+        ],
+        {
+            type: ""
+        }
+    ); //创建二进制对象写入转换好的字节流
+    const href = URL.createObjectURL(tmpDown), //创建对象超链接
+        hf = document.getElementById("hf");
+    hf.href = href; //绑定a标签
+    hf.download = excelName + '.xlsx';
+    hf.click(); //模拟点击实现下载
+    setTimeout(function () {
+        //延时释放
+        URL.revokeObjectURL(tmpDown); //用URL.revokeObjectURL()来释放这个object URL
+    }, 100);
+}
+export function getCharCol(n) { // 将指定的自然数转换为26进制表示。映射关系：[0-25] -> [A-Z]。
+    let s = ''
+    let m = 0
+    while (n > 0) {
+        m = n % 26 + 1
+        s = String.fromCharCode(m + 64) + s
+        n = (n - m) / 26
+    }
+    return s
+}
+
+export function s2ab(s) { //字符串转字符流
+    var buf = new ArrayBuffer(s.length);
+    var view = new Uint8Array(buf);
+    for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+    return buf;
+}
+
+export function importConverData(cb) {
+    let obj = document.getElementById("imFile");
+    if (!obj.files) {
+        return;
+    }
+    var f = obj.files[0];
+    var reader = new FileReader();
+    let $t = {
+        rABS: false,
+        wb: null,
+    };
+    reader.onload = function (e) {
+        var data = e.target.result;
+        if ($t.rABS) {
+            $t.wb = XLSX.read(btoa(fixdata(data)), {
+                // 手动转化
+                type: "base64"
+            });
+        } else {
+            $t.wb = XLSX.read(data, {
+                type: "binary"
+            });
+        }
+        let json = XLSX.utils.sheet_to_json($t.wb.Sheets[$t.wb.SheetNames[0]]);
+        cb(json);
+    };
+    if ($t.rABS) {
+        reader.readAsArrayBuffer(f);
+    } else {
+        reader.readAsBinaryString(f);
+    }
+}
+
+// 文件流转BinaryString
+export function fixdata(data) {
+    var o = "";
+    var l = 0;
+    var w = 10240;
+    for (; l < data.byteLength / w; ++l) {
+        o += String.fromCharCode.apply(
+            null,
+            new Uint8Array(data.slice(l * w, l * w + w))
+        );
+    }
+    o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+    return o;
 }
 
 /**
@@ -351,15 +477,15 @@ export function extendsProtoType() {
     };
 }
 
-export function tooltip(target,message,time=1000,type='error') {
+export function tooltip(target, message, time = 1000, type = 'error') {
 
     const tooltip = document.createElement('div'),
         offset = getOffset(target);
-    if( type == 'error' ){
+    if (type == 'error') {
         tooltip.className = 'zyt-tooltip';
         tooltip.style.top = offset.top - 46;
         tooltip.style.left = offset.left;
-    }else{
+    } else {
         tooltip.className = 'zyt-tooltip info';
         tooltip.style.top = offset.top + target.clientHeight + 6;
         tooltip.style.left = offset.left;
@@ -368,9 +494,9 @@ export function tooltip(target,message,time=1000,type='error') {
     document.body.append(tooltip);
 
     let length = document.getElementsByClassName('zyt-tooltip').length,
-        tip = document.getElementsByClassName('zyt-tooltip')[ length - 1 ],
+        tip = document.getElementsByClassName('zyt-tooltip')[length - 1],
         width = tip.clientWidth;
-    tip.style.left = offset.left - ( width - target.clientWidth )/2;
+    tip.style.left = offset.left - (width - target.clientWidth) / 2;
 
     setTimeout(function () {
         clearToolTip();
@@ -429,11 +555,11 @@ export function isDateBetween(date, start, end) {
     var thisDate = +new Date(date),
         startDate = +new Date(start),
         endDate = +new Date(end);
-    if ( thisDate >= startDate && thisDate <= endDate) {
+    if (thisDate >= startDate && thisDate <= endDate) {
         return true;
-    }else if( convertDate(date).substring(0,10) == convertDate( startDate ).substring(0,10) ){
+    } else if (convertDate(date).substring(0, 10) == convertDate(startDate).substring(0, 10)) {
         return true;
-    }else if( convertDate(date).substring(0,10) == convertDate( endDate).substring(0,10) ){
+    } else if (convertDate(date).substring(0, 10) == convertDate(endDate).substring(0, 10)) {
         return true;
     }
     return false;
