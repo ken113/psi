@@ -13,4 +13,6 @@ router.get('/getOrderById/:orderId', orderController.getOrderById)
 
 router.post('/updateOrder', orderController.updateOrder)
 
+router.post('/import', orderController.importData)
+
 module.exports = router;

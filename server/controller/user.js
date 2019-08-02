@@ -15,8 +15,8 @@ const jwt = require('jsonwebtoken')
 //解析token
 const tools = require('../public/tool')
 
-//统一设置token有效时间  为了方便观察，设为10s
-const expireTime = 60 * 60 + 's';
+//统一设置token有效时间
+const expireTime = '2h';
 
 //自动创建表
 user.sync({ force: false });

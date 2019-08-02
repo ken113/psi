@@ -37,6 +37,9 @@ class orderModule {
             }
         })
     }
+    static async bulkCreateOrder(data) {
+        return await order.bulkCreate(data)
+    }
 
 }
 
@@ -47,7 +50,7 @@ class orderController {
         const req = ctx.request.body;
         const date = new Date();
         const data = Object.assign({}, req, {
-            orderNumber: tools.dateNum(date),
+            orderNumber: tools.dateNum(date) + '' + (Math.round(Math.random() * 8999 + 1000)),
             createDate: date,
             state: '接单'
         });
@@ -90,6 +93,32 @@ class orderController {
             return ctx.body = {
                 code: '-1',
                 desc: '更新失败'
+            }
+        }
+    }
+    static async importData(ctx) {
+        const req = ctx.request.body;
+
+        let newData = [];
+
+        req.forEach(element => {
+            let date = new Date();
+            newData.push(Object.assign({}, element, {
+                orderNumber: tools.dateNum(date) + '' + (Math.round(Math.random() * 8999 + 1000)),
+                createDate: date,
+            }));
+        });
+
+        try {
+            const result = await orderModule.bulkCreateOrder(newData);
+            return ctx.body = {
+                code: '0',
+                desc: '添加成功'
+            }
+        } catch (error) {
+            return ctx.body = {
+                code: '-1',
+                desc: error
             }
         }
     }
