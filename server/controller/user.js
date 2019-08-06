@@ -71,7 +71,7 @@ class userModule {
             })
         }
         return await user.findAll({
-            attributes: ['userId', 'userName', 'mobileNo']
+            attributes: ['userId', 'userName', 'mobileNo', 'department']
         });
 
     }
@@ -96,7 +96,8 @@ class userController {
                     const param = {
                         password: req.password,
                         mobileNo: req.mobileNo,
-                        userName: req.userName
+                        userName: req.userName,
+                        department: req.department
                     }
                     const data = await userModule.userRegist(param);
 
@@ -134,7 +135,8 @@ class userController {
                     //生成token，验证登录有效期
                     const token = jwt.sign({
                         user: req.mobileNo,
-                        password: req.password
+                        password: req.password,
+                        userId: data.userId
                     }, '123456', { expiresIn: expireTime });
                     const info = {
                         createdAt: data.createdAt,
@@ -214,7 +216,8 @@ class userController {
 
         return ctx.body = {
             mobileNo: data.mobileNo * 1,
-            userName: data.userName
+            userName: data.userName,
+            department: data.department
         }
     }
 
@@ -227,7 +230,11 @@ class userController {
         }
     }
     static async updateUser(ctx) {
-        const req = ctx.request.body;
+        let req = ctx.request.body;
+        const token = await tools.verToken(ctx.headers.authorization);
+        req = Object.assign({}, req, {
+            userId: token.userId
+        });
         try {
             let data = await userModule.updateUser(req);
             return ctx.body = {

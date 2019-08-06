@@ -43,6 +43,8 @@ export default {
             } else {
               localStorage.setItem("token", response.data.token);
               localStorage.setItem("userName", response.data.userInfo.userName);
+              //that.$store.dispatch("setUserInfo", response.data.userInfo).then( () =>{});
+              //that.$store.commit("setUserInfo", response.data.userInfo);
               let path = that.$route.query.redirect;
               if (path) {
                 window.location.href = path;

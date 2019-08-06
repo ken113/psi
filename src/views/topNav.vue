@@ -50,23 +50,35 @@
           </el-menu-item>
         </el-menu>
       </div>
-      <div class="nav-right"><i class="el-icon-switch-button" title="退出登录" @click="logout"></i></div>
+      <div class="nav-right">
+        <span class="userName" title="修改密码" @click="updatePassword">{{ userName }}</span>
+        <i class="el-icon-switch-button" title="退出登录" @click="logout"></i>
+      </div>
     </div>
     <router-view></router-view>
     <a href="" download="导出.xlsx" id="hf"></a>
   </div>
 </template>
 <script>
+import router from "./../router";
+import axios from "axios";
 export default {
   name: "topNav",
   data() {
     return {
       activeIndex: "",
-      showNav: false
+      showNav: false,
+      userName: ""
     };
   },
   mounted() {
     this.activeIndex = this.$route.path.split("/")[1];
+    this.userName = localStorage.getItem("userName");
+
+    const userInfo = {
+      userName: localStorage.getItem("userName"),
+      userId: 0
+    };
   },
   watch: {
     $route(to, from) {
@@ -77,7 +89,31 @@ export default {
     handleSelect(key, keyPath) {},
     logout() {
       localStorage.removeItem("token");
-      window.location.href = "/login";
+      router.replace({
+        path: "/login",
+        query: {
+          redirect: router.currentRoute.fullPath
+        }
+      });
+    },
+    updatePassword() {
+      const that = this;
+
+      this.$prompt("请输入密码", "提示", {
+        confirmButtonText: "确定",
+        inputType: "password",
+        cancelButtonText: "取消"
+      }).then(({ value }) => {
+        axios
+          .post("/user/updateUser", { password: value })
+          .then(function(response) {
+            if (response.status === 200 && response.data.code === "0") {
+              that.logout();
+            } else {
+              that.$message.error("修改失败");
+            }
+          });
+      });
     }
   }
 };
@@ -108,12 +144,23 @@ export default {
   }
   .nav-right {
     float: right;
+    line-height: 60px;
+    height: 60px;
+    vertical-align: middle;
+
+    .userName {
+      font-size: 14px;
+      color: #fff;
+      padding: 0 10px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
     i {
       color: #fff;
-      font-size: 28px;
-      margin-top: 16px;
+      font-size: 20px;
       margin-right: 20px;
       cursor: pointer;
+      vertical-align: middle;
     }
   }
 }

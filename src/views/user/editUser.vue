@@ -14,6 +14,13 @@
       <el-form-item label="手机号:" prop="mobileNo" required>
         <el-input v-model.number="form.mobileNo"></el-input>
       </el-form-item>
+      <el-form-item label="部门:" prop="department" required>
+        <el-select v-model="form.department" placeholder="请选择" style="width:320px;">
+          <el-option label="管理员" value="管理员"></el-option>
+          <el-option label="财务" value="财务"></el-option>
+          <el-option label="生产" value="生产"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="modifyUser">修改</el-button>
       </el-form-item>
@@ -30,7 +37,8 @@ export default {
       userId: "",
       form: {
         userName: "",
-        modileNo: ""
+        modileNo: "",
+        department: ""
       },
       rules: {
         userName: [{ required: true, message: "请输入姓名", trigger: "blur" }],
@@ -41,6 +49,9 @@ export default {
             message: "手机号必须为数字",
             trigger: ["blur", "change"]
           }
+        ],
+        department: [
+          { required: true, message: "请选择部门", trigger: "blur,change" }
         ]
       }
     };
@@ -65,6 +76,7 @@ export default {
           const param = {
             mobileNo: that.form.mobileNo,
             userName: that.form.userName,
+            department: that.form.department,
             userId: that.userId
           };
           axios.post("/user/updateUser", param).then(function(response) {

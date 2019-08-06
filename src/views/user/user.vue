@@ -18,6 +18,8 @@
       </el-table-column>
       <el-table-column prop="userName" label="姓名">
       </el-table-column>
+      <el-table-column prop="department" label="部门">
+      </el-table-column>
       <el-table-column prop="opt" label="操作">
         <template scope="scope">
           <router-link :to="{path:'/user/edit/' + scope.row.userId }">

@@ -22,6 +22,11 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.STRING,
                 allowNull: false,
                 field: 'userName'
+            },
+            department: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                field: 'department'
             }
         },
         {

@@ -3,7 +3,7 @@ import App from './App.vue'
 import store from './store'
 import {
   Menu, MenuItem, Submenu, Button, Breadcrumb, BreadcrumbItem, Select, Radio, RadioGroup, RadioButton, Form, FormItem, Input, Option, DatePicker, Table,
-  TableColumn, MessageBox, Message
+  TableColumn, MessageBox, Message, Pagination
 } from 'element-ui';
 import router from './router'
 import axios from 'axios';
@@ -28,6 +28,7 @@ Vue.use(Option)
 Vue.use(DatePicker)
 Vue.use(Table)
 Vue.use(TableColumn)
+Vue.use(Pagination)
 
 Vue.config.productionTip = false
 

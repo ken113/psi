@@ -11,31 +11,35 @@
       <el-button type="primary" style="float:right;margin:8px 10px 0 10px;">搜索</el-button>
       <el-input style="float:right;margin:8px 10px 0 10px; width:350px;" placeholder="订单编号搜索,支持多编号空格隔开搜索" />
     </div>
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="orderNumber" label="订单号">
-      </el-table-column>
-      <el-table-column prop="orderName" label="订单名称">
-      </el-table-column>
-      <el-table-column prop="customerCompany" label="客户公司">
-      </el-table-column>
-      <el-table-column prop="state" label="订单状态" column-key="state" :formatter="formatState">
-      </el-table-column>
-      <el-table-column prop="createDate" label="下单时间" column-key="createDate" :formatter="formatTime">
-      </el-table-column>
-      <el-table-column prop="deliveryDate" label="交货日期" column-key="deliveryDate" :formatter="formatTime">
-      </el-table-column>
-      <el-table-column prop="materialName" label="物料">
-      </el-table-column>
-      <el-table-column prop="remark" label="备注">
-      </el-table-column>
-      <el-table-column prop="opt" label="操作">
-        <template scope="scope">
-          <router-link :to="{path:'/order/edit/' + scope.row.orderId }">
-            <el-button type="text">修改</el-button>
-          </router-link>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div>
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column prop="orderNumber" label="订单号">
+        </el-table-column>
+        <el-table-column prop="orderName" label="订单名称">
+        </el-table-column>
+        <el-table-column prop="customerCompany" label="客户公司">
+        </el-table-column>
+        <el-table-column prop="state" label="订单状态" column-key="state" :formatter="formatState">
+        </el-table-column>
+        <el-table-column prop="createDate" label="下单时间" column-key="createDate" :formatter="formatTime">
+        </el-table-column>
+        <el-table-column prop="deliveryDate" label="交货日期" column-key="deliveryDate" :formatter="formatTime">
+        </el-table-column>
+        <el-table-column prop="materialName" label="物料">
+        </el-table-column>
+        <el-table-column prop="remark" label="备注">
+        </el-table-column>
+        <el-table-column prop="opt" label="操作">
+          <template scope="scope">
+            <router-link :to="{path:'/order/edit/' + scope.row.orderId }">
+              <el-button type="text">修改</el-button>
+            </router-link>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[20, 50, 100, 200]" :page-size="20" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
+    </div>
   </div>
 </template>
 <script>
@@ -50,7 +54,9 @@ export default {
   name: "order",
   data() {
     return {
-      tableData: []
+      tableData: [],
+      currentPage: 1,
+      total: 0
     };
   },
   mounted() {
@@ -64,6 +70,7 @@ export default {
         .then(function(response) {
           if (response.status === 200) {
             that.tableData = response.data.list;
+            that.total = response.data.list.length;
           }
         })
         .catch(function(error) {});
@@ -136,6 +143,12 @@ export default {
           }
         });
       });
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
     }
   }
 };
