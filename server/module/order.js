@@ -11,44 +11,94 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
                 autoIncrement: true
             },
-            orderNumber: {
+            orderName: {
                 type: DataTypes.STRING,
-                allowNull: false,
-                field: 'orderNumber'
-            },
-            orderName: {//规格
-                type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
                 field: 'orderName'
             },
-            customerCompany: {//助记码
+            customerCompany: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
                 field: 'customerCompany'
+            },
+            customerOrderNo: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'customerOrderNo'
+            },
+            specs: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'specs'
+            },
+            price: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'price'
+            },
+            count: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'count'
+            },
+            money: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'money'
             },
             state: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
                 field: 'state'
+            },
+            reconciliationMonth: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'reconciliationMonth'
             },
             createDate: {
                 type: DataTypes.DATE,
-                allowNull: false,
+                allowNull: true,
                 field: 'createDate'
+            },
+            customerDeliveryDate: {
+                type: DataTypes.DATE,
+                allowNull: true,
+                field: 'customerDeliveryDate'
             },
             deliveryDate: {
                 type: DataTypes.DATE,
-                allowNull: false,
+                allowNull: true,
                 field: 'deliveryDate'
+            },
+            deliveryCount: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'deliveryCount'
+            },
+            departmentCode: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'departmentCode'
+            },
+            contacts: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'contacts'
+            },
+            user: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                field: 'user'
             },
             materialName: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
                 field: 'materialName'
             },
             remark: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
                 field: 'remark'
             }
         },

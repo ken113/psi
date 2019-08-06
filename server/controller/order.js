@@ -20,8 +20,16 @@ class orderModule {
     static async orderAdd(data) {
         return await order.create(data)
     }
-    static async getOrderList() {
-        return await order.findAll({});
+    static async getOrderList(data) {
+        return await order.findAndCountAll({
+            limit: data.pageSize,
+            offset: data.pageSize * (data.currentPage - 1),
+            where: {
+                orderName: {
+                    [Op.like]: '%' + data.searchStr + '%'
+                }
+            }
+        });
     }
     static async getOrderById(orderId) {
         return await order.findOne({
@@ -50,9 +58,8 @@ class orderController {
         const req = ctx.request.body;
         const date = new Date();
         const data = Object.assign({}, req, {
-            orderNumber: tools.dateNum(date) + '' + (Math.round(Math.random() * 8999 + 1000)),
             createDate: date,
-            state: '接单'
+            state: '新增订单'
         });
         try {
             const result = await orderModule.orderAdd(data);
@@ -69,9 +76,10 @@ class orderController {
     }
     static async getOrderList(ctx) {
         const req = ctx.request.body;
-        let data = await orderModule.getOrderList(req.searchStr);
+        let data = await orderModule.getOrderList(req);
         return ctx.body = {
-            list: data
+            list: data.rows,
+            count: data.count
         };
 
     }
@@ -104,7 +112,6 @@ class orderController {
         req.forEach(element => {
             let date = new Date();
             newData.push(Object.assign({}, element, {
-                orderNumber: tools.dateNum(date) + '' + (Math.round(Math.random() * 8999 + 1000)),
                 createDate: date,
             }));
         });

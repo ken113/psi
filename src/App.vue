@@ -6,4 +6,8 @@
 <script>
 </script>
 <style lang="scss">
+html {
+  color: #606266;
+  font-size: 13px;
+}
 </style>
