@@ -18,6 +18,8 @@ const customer = require('./routes/customer')
 const supplier = require('./routes/supplier')
 const purchase = require('./routes/purchase')
 
+const router = require('koa-router')();
+const send = require('koa-send');
 // error handler
 onerror(app)
 
@@ -56,11 +58,13 @@ app.use(async (ctx, next) => {
   })
 })
 
+
+
 app.use(koajwt({
   secret: '123456',
   //passthrough: true
 }).unless({
-  path: [/^\/user\/regist/, /^\/user\/login/]
+  path: [/^\/user\/regist/, /^\/user\/login/, /^\/download/]
 }))
 
 // routes

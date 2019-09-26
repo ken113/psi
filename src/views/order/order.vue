@@ -6,58 +6,60 @@
         <el-select v-model="orderStatus" placeholder="请选择">
           <el-option label="已送货待签回单" value="已送货待签回单"></el-option>
           <el-option label="已外发待回料" value="已外发待回料"></el-option>
-        </el-select>
+        </el-select>&nbsp;&nbsp;
+        <el-button type="primary" @click="updateStatus">确认</el-button>
       </div>
       <router-link to="/order/add">
         <el-button type="primary" style="float:right;margin-top:8px;">新增订单</el-button>
       </router-link>
       <el-button style="float:right;margin:8px 10px 0 10px;" @click="downloadExl">导出</el-button>
       <el-button style="float:right;margin:8px 10px 0 10px;" @click="importExl">导入</el-button>
+      <a class="filedown" @click="downloadFile">导入模板下载</a>
       <input type="file" @change="importFile(this)" id="imFile" style="display: none" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
       <el-button type="primary" style="float:right;margin:8px 10px 0 10px;" @click="loadList()">搜索</el-button>
       <el-input style="float:right;margin:8px 10px 0 10px; width:350px;" v-model="searchStr" placeholder="订单名称搜索" />
     </div>
     <div>
-      <el-table :data="tableData" style="width: 100%" border max-height="600">
-        <el-table-column type="selection" width="30">
+      <el-table :data="tableData" style="width: 100%" border max-height="600" @selection-change="handleSelectionChange" :row-class-name="tableRowClassName">>
+        <el-table-column type="selection" width="30" fixed>
         </el-table-column>
-        <el-table-column prop="customerOrderNo" label="客户订单" width="120">
+        <el-table-column prop="customerOrderNo" label="客户订单" width="120" fixed>
+        </el-table-column>
+        <el-table-column prop="orderName" label="订单名称" width="200" fixed>
+        </el-table-column>
+        <el-table-column prop="customerCompany" label="客户公司" fixed>
+        </el-table-column>
+        <el-table-column prop="state" label="订单状态" width="120" column-key="state" :formatter="formatState" fixed>
         </el-table-column>
         <el-table-column prop="createDate" label="下单时间" column-key="createDate" :formatter="formatTime" width="140">
         </el-table-column>
-        <el-table-column prop="orderName" label="订单名称" width="160">
-        </el-table-column>
-        <el-table-column prop="customerCompany" label="客户公司">
-        </el-table-column>
-        <el-table-column prop="state" label="订单状态" column-key="state" :formatter="formatState">
-        </el-table-column>
         <el-table-column prop="specs" label="规格">
         </el-table-column>
-        <el-table-column prop="price" label="单价">
+        <el-table-column prop="price" label="单价" width="60">
         </el-table-column>
-        <el-table-column prop="count" label="数量">
+        <el-table-column prop="count" label="数量" width="60">
         </el-table-column>
-        <el-table-column prop="money" label="金额">
+        <el-table-column prop="money" label="金额" width="60">
           <template scope="scope">
             {{ scope.row.price*scope.row.count }}
           </template>
         </el-table-column>
-        <el-table-column prop="customerDeliveryDate" column-key="customerDeliveryDate" :formatter="formatTime" label="客户交期" width="120">
+        <el-table-column prop="customerDeliveryDate" column-key="customerDeliveryDate" :formatter="formatTime" label="客户交期" width="90">
         </el-table-column>
-        <el-table-column prop="reconciliationMonth" label="对帐月份" column-key="reconciliationMonth" :formatter="formatTime">
+        <el-table-column prop="reconciliationMonth" label="对帐月份" column-key="reconciliationMonth" :formatter="formatTime" width="70">
         </el-table-column>
-        <el-table-column prop="deliveryDate" label="送货日期" column-key="deliveryDate" :formatter="formatTime" width="120">
+        <el-table-column prop="deliveryDate" label="送货日期" column-key="deliveryDate" :formatter="formatTime" width="90">
         </el-table-column>
-        <el-table-column prop="deliveryCount" label="送货数量">
+        <el-table-column prop="deliveryCount" label="送货数量" width="70">
         </el-table-column>
-        <el-table-column prop="deficit" label="欠量">
+        <el-table-column prop="deficit" label="欠量" width="60">
           <template scope="scope">
             {{ scope.row.count - scope.row.deliveryCount }}
           </template>
         </el-table-column>
         <el-table-column prop="departmentCode" label="部门代码">
         </el-table-column>
-        <el-table-column prop="contacts" label="联系人">
+        <el-table-column prop="contacts" label="联系人" column-key="contacts" :formatter="formatTime">
         </el-table-column>
         <el-table-column prop="user" label="使用人">
         </el-table-column>
@@ -91,6 +93,7 @@ export default {
       orderStatus: "",
       searchStr: "",
       tableData: [],
+      multipleSelection: [],
       currentPage: 1,
       pageSize: 20,
       total: 0
@@ -129,15 +132,72 @@ export default {
       if (column.columnKey === "reconciliationMonth") {
         return convertDate(row.reconciliationMonth).substring(0, 7);
       }
+      if (column.columnKey === "contacts") {
+        if (row.contactsId) {
+          return (
+            <a target="_blank" href={"/customer/view/" + row.contactsId}>
+              {row.contacts}
+            </a>
+          );
+        } else {
+          return row.contacts;
+        }
+      }
     },
     formatState(row, column) {
       let html = "";
-      if (row.state === "接单") {
-        html = <span style="color:#FF0000">接单</span>;
+      if (row.state === "已送货待签回单") {
+        html = <span style="color:#ff0000">已送货待签回单</span>;
+      } else if (row.state === "已外发待回料") {
+        html = <span style="color:#E6A23C">已外发待回料</span>;
       } else {
         html = row.state;
       }
       return <div>{html}</div>;
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (row.count - row.deliveryCount > 0) {
+        return "warning-row";
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    updateStatus() {
+      if (!this.multipleSelection.length) {
+        this.$message({
+          duration: 1000,
+          message: "请至少选中一条数据！",
+          type: "error"
+        });
+        return;
+      }
+      if (!this.orderStatus) {
+        this.$message({
+          duration: 1000,
+          message: "请选择状态",
+          type: "error"
+        });
+        return;
+      }
+      const that = this,
+        orderIdList = that.multipleSelection.map(item => {
+          return item.orderId;
+        });
+      axios
+        .post("/order/updateOrder", {
+          orderIdList: orderIdList,
+          status: that.orderStatus
+        })
+        .then(function(response) {
+          if (response.status === 200) {
+            that.orderStatus = "";
+            that.loadList();
+          }
+        });
+    },
+    downloadFile() {
+      //window.open("/order/download/order.xlsx");
     },
     downloadExl() {
       let excelData = [
@@ -229,4 +289,16 @@ export default {
 };
 </script>
 <style scoped>
+.el-table .warning-row {
+  background: #f56c6c;
+}
+a.filedown {
+  display: none;
+  float: right;
+  margin: 8px 10px 0 10px;
+  height: 32px;
+  line-height: 32px;
+  cursor: pointer;
+  text-decoration: underline;
+}
 </style>

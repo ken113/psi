@@ -2,8 +2,8 @@
   <div class="page-addorder">
     <div style="overflow:hidden;">
       <el-breadcrumb separator-class="el-icon-arrow-right" style="margin:20px 0;float:left;">
-        <el-breadcrumb-item>订单列表</el-breadcrumb-item>
-        <el-breadcrumb-item>订单修改</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/order' }">订单列表</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ pageType }}</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <el-form label-width="100px" :model="form" :rules="rules" ref="form" :inline="true">
@@ -44,7 +44,7 @@
         <el-input v-model="form.departmentCode"></el-input>
       </el-form-item>
       <el-form-item label="联系人:" prop="contacts">
-        <el-input v-model="form.contacts"></el-input>
+        <el-autocomplete class="inline-input" v-model="form.contacts" :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect"></el-autocomplete>
       </el-form-item>
       <el-form-item label="使用人:" prop="user">
         <el-input v-model="form.user"></el-input>
@@ -54,7 +54,8 @@
       </el-form-item>
       <div style="text-align:left;">
         <el-form-item>
-          <el-button type="primary" @click="modifyOrder">立即修改</el-button>
+          <el-button type="primary" @click="modifyOrder" v-show="pageType=='订单修改'">修改</el-button>
+          <el-button type="primary" @click="addOrder" v-show="pageType=='订单创建'">创建</el-button>
         </el-form-item>
       </div>
     </el-form>
@@ -62,11 +63,24 @@
 </template>
 <script>
 import axios from "axios";
-
+import { validate } from "./../../lib/common";
 export default {
   name: "modifyOrder",
   data() {
+    const checkNum = (rule, value, callback) => {
+      if (!value) {
+        callback();
+      } else {
+        if (!validate.isNum(value)) {
+          callback(new Error("只允许数字"));
+        } else {
+          callback();
+        }
+      }
+    };
+
     return {
+      pageType: "",
       form: {
         customerOrderNo: "",
         orderName: "",
@@ -83,33 +97,60 @@ export default {
         deficit: "",
         departmentCode: "",
         contacts: "",
+        contactsId: "",
         user: "",
+        userId: "",
         remark: ""
       },
       rules: {
-        materialName: [
-          //{ required: true, message: "请填写物料名称", trigger: "blur" }
-        ]
-      }
+        price: [{ validator: checkNum, trigger: "blur" }],
+        count: [{ validator: checkNum, trigger: "blur" }],
+        deliveryCount: [{ validator: checkNum, trigger: "blur" }]
+      },
+      restaurants: []
     };
   },
 
   mounted() {
-    var that = this;
-    that.orderId = that.$route.params.orderId * 1;
-    axios.get("/order/getOrderById/" + that.orderId).then(function(response) {
-      if (response.status === 200) {
-        that.form = Object.assign({}, that.from, response.data);
-      } else {
-        that.$message.error(response.data.desc);
-      }
-    });
+    if (this.$route.params.orderId) {
+      this.pageType = "订单修改";
+      var that = this;
+      that.orderId = that.$route.params.orderId * 1;
+      axios.get("/order/getOrderById/" + that.orderId).then(function(response) {
+        if (response.status === 200) {
+          that.form = Object.assign({}, that.from, response.data);
+        } else {
+          that.$message.error(response.data.desc);
+        }
+      });
+    } else {
+      this.pageType = "订单创建";
+    }
+    this.loadCustomer();
   },
   methods: {
+    addOrder() {
+      const that = this;
+      that.$route.query.redirect;
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          const userName = localStorage.getItem("userName");
+          const param = Object.assign({}, that.form);
+          axios.post("/order/add", param).then(function(response) {
+            if (response.status === 200 && response.data.code === "0") {
+              window.location.href = "/order";
+            } else {
+              that.$message.error(response.data.desc);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
     modifyOrder() {
       const that = this;
-
-      this.$refs.form.validate(valid => {
+      that.$refs.form.validate(valid => {
         if (valid) {
           const userName = localStorage.getItem("userName");
           const param = Object.assign({}, that.form);
@@ -123,6 +164,39 @@ export default {
         } else {
           return false;
         }
+      });
+    },
+    loadCustomer() {
+      var that = this;
+      axios
+        .post("/customer/getCustomerList", { searchStr: that.searchStr })
+        .then(function(response) {
+          if (response.status === 200) {
+            const result = response.data.list.map(item => {
+              return { value: item.contacts, customerId: item.customerId };
+            });
+            that.restaurants = result;
+          }
+        });
+    },
+    querySearch(queryString, cb) {
+      var restaurants = this.restaurants;
+      var results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    handleSelect(item) {
+      this.form = Object.assign({}, this.form, {
+        contactsId: item.customerId
       });
     }
   }

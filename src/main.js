@@ -3,7 +3,7 @@ import App from './App.vue'
 import store from './store'
 import {
   Menu, MenuItem, Submenu, Button, Breadcrumb, BreadcrumbItem, Select, Radio, RadioGroup, RadioButton, Form, FormItem, Input, Option, DatePicker, Table,
-  TableColumn, MessageBox, Message, Pagination
+  TableColumn, MessageBox, Message, Pagination, Autocomplete
 } from 'element-ui';
 import router from './router'
 import axios from 'axios';
@@ -29,6 +29,7 @@ Vue.use(DatePicker)
 Vue.use(Table)
 Vue.use(TableColumn)
 Vue.use(Pagination)
+Vue.use(Autocomplete)
 
 Vue.config.productionTip = false
 
@@ -38,7 +39,12 @@ Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$prompt = MessageBox.prompt;
 Vue.prototype.$message = Message;
 
-axios.defaults.baseURL = 'http://localhost:3333';
+if (window.location.href.indexOf('localhost') === -1) {
+  axios.defaults.baseURL = 'http://e6664aa5.ngrok.io';
+} else {
+  axios.defaults.baseURL = 'http://localhost:3333';
+}
+
 axios.defaults.timeout = 100000;
 
 axios.interceptors.request.use(function (config) {

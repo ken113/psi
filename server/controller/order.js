@@ -11,6 +11,8 @@ const order = Sequelize.import('../module/order')
 
 const tools = require('../public/tool')
 
+const send = require('koa-send');
+
 //自动创建表
 order.sync({ force: false });
 
@@ -39,11 +41,23 @@ class orderModule {
         })
     }
     static async updateOrder(data) {
-        return await order.update(data, {
-            where: {
-                orderId: data.orderId
-            }
-        })
+
+        if (data.orderIdList) {
+            return await order.update({
+                state: data.status
+            }, {
+                    where: {
+                        orderId: data.orderIdList
+                    }
+                })
+        } else {
+            return await order.update(data, {
+                where: {
+                    orderId: data.orderId
+                }
+            })
+        }
+
     }
     static async bulkCreateOrder(data) {
         return await order.bulkCreate(data)

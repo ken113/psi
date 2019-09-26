@@ -2,7 +2,7 @@
   <div class="page-order">
     <div style="overflow:hidden;">
       <el-breadcrumb separator-class="el-icon-arrow-right" style="margin:20px 0;float:left;">
-        <el-breadcrumb-item :to="{ path: '/' }">客户资料管理</el-breadcrumb-item>
+        <el-breadcrumb-item>客户资料管理</el-breadcrumb-item>
       </el-breadcrumb>
       <router-link to="/customer/add">
         <el-button type="primary" style="float:right;margin-top:8px;">新增客户</el-button>

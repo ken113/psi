@@ -86,10 +86,20 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
                 field: 'contacts'
             },
+            contactsId: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                field: 'contactsId'
+            },
             user: {
                 type: DataTypes.STRING,
                 allowNull: true,
                 field: 'user'
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                field: 'userId'
             },
             materialName: {
                 type: DataTypes.STRING,
